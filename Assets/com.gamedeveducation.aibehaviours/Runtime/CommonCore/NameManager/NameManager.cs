@@ -10,7 +10,7 @@ namespace CommonCore
         // prevent others from initiating without providing additional information
         public static FastName None = new();
 
-        System.UInt32 NameID;
+        UInt32 NameID;
 
         // invalid ID: 0
         private FastName()
@@ -71,14 +71,65 @@ namespace CommonCore
 
     public class NameManager : Singleton<NameManager>
     {
-        internal static uint CreateOrRetrieveID(string inName)
+        UInt32 NextNameID = 1; // start at 1
+        Dictionary<UInt32, string> NameIDs = new(); 
+        static object _NameIDsLock = new object();
+
+        internal static uint CreateOrRetrieveID(string InName)
         {
-            throw new NotImplementedException();
+            if (Instance == null)
+                return 0;
+
+            return Instance.CreateOrRetrieveIDInternal(InName);
         }
 
-        internal static string RetrieveNameFromID(uint nameID)
+        internal static string RetrieveNameFromID(UInt32 InNameID)
         {
-            throw new NotImplementedException();
+            if (Instance == null)
+                return "## No NameManager ##";
+
+            return Instance.RetrieveNameFromIDInternal(InNameID);
+        }
+
+        internal UInt32 CreateOrRetrieveIDInternal(string InName)
+        {
+            lock (_NameIDsLock)
+            {
+                // does this name already exists?
+                UInt32 FoundNameID = 0;
+                foreach (var KVP in NameIDs)
+                {
+                    if (KVP.Value == InName)
+                    {
+                        FoundNameID = KVP.Key;
+                        break;
+                    }
+                }
+
+                // name ID not found - create
+                if (FoundNameID == 0)
+                {
+                    FoundNameID = NextNameID;
+                    ++NextNameID;
+
+                    NameIDs.Add(FoundNameID, InName);
+                }
+
+                return FoundNameID;
+            }
+        }
+
+        internal string RetrieveNameFromIDInternal(UInt32 InNameID)
+        {
+            lock ( _NameIDsLock)
+            {
+                string FoundName = null;
+
+                if (NameIDs.TryGetValue(InNameID, out FoundName))
+                    return FoundName;
+
+                return "## Missing ID ##";
+            }
         }
     }
 }
