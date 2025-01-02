@@ -1,0 +1,107 @@
+using CommonCore;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace StateMachine
+{
+    public enum ESMTickResult 
+    {
+        Running,
+        Failed
+    }
+
+    public class SMInstance : IDebuggable
+    {
+        List<ISMState> States = new();
+        ISMState CurrentState = null;
+        Blackboard<FastName> LinkedBlackboard = null;
+
+        public string DebugDisplayName => "StateMachine";
+
+        public void BindToBlackboard(Blackboard<FastName> InBlackboard)
+        {
+            LinkedBlackboard = InBlackboard;  
+        }
+
+        public ISMState AddState(ISMState InState)
+        {
+            States.Add(InState);
+            return InState;
+        }
+
+        // for every existing state, add transitions to the finished state and failed state
+        public void AddDefaultTransition(ISMState InFinishedState, ISMState InFailedState)
+        {
+            foreach (var State in States)
+            {
+                if ((State == InFinishedState) || (State == InFailedState))
+                    continue;
+
+                State.AddDefaultTransition(InFinishedState, InFailedState);
+            }
+        }
+
+        public void Reset()
+        {
+            // properly exit current state if it's actively running
+            if ((CurrentState != null) && (CurrentState.GetStatus() == ESMStateStatus.Running))
+                CurrentState.OnExit(LinkedBlackboard);
+
+            CurrentState = null;
+        }
+
+        public ESMTickResult Tick(float InDeltaTime)
+        {
+            // no current state?
+            if (CurrentState == null)
+            {
+                // no states present?
+                if (States.Count == 0)
+                    return ESMTickResult.Failed;
+
+                // set initial state
+                CurrentState = States[0];
+
+                // null initial state
+                if (CurrentState == null)
+                    return ESMTickResult.Failed;
+
+                CurrentState.OnEnter(LinkedBlackboard);
+            }
+
+            // current state must be valid and already entered
+            CurrentState.OnTick(LinkedBlackboard, InDeltaTime);
+
+            // check transitions
+            ISMState NextState = null;
+            CurrentState.EvaluateTransition(LinkedBlackboard, out NextState);
+
+            // transition required?
+            if (NextState != null)
+            {
+                CurrentState.OnExit(LinkedBlackboard);
+
+                CurrentState = NextState;
+
+                CurrentState.OnEnter(LinkedBlackboard);
+            }
+
+            return ESMTickResult.Running;
+        }
+
+        public void GatherDebugData(IGameDebugger InDebugger, bool bInIsSelected)
+        {
+            InDebugger.AddSectionHeader($"{DebugDisplayName}");
+
+            foreach (var State in States)
+            {
+                InDebugger.PushIndent();
+
+                CurrentState.GatherDebugData(InDebugger, bInIsSelected && (State == CurrentState));
+
+                InDebugger.PopIndent();
+            }
+        }
+    }
+}
