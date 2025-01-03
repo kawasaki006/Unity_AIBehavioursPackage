@@ -38,7 +38,7 @@ namespace StateMachine
                 if ((State == InFinishedState) || (State == InFailedState))
                     continue;
 
-                State.AddDefaultTransition(InFinishedState, InFailedState);
+                State.AddDefaultTransitions(InFinishedState, InFailedState);
             }
         }
 
@@ -92,13 +92,16 @@ namespace StateMachine
 
         public void GatherDebugData(IGameDebugger InDebugger, bool bInIsSelected)
         {
+            if (!bInIsSelected)
+                return;
+
             InDebugger.AddSectionHeader($"{DebugDisplayName}");
 
             foreach (var State in States)
             {
                 InDebugger.PushIndent();
 
-                CurrentState.GatherDebugData(InDebugger, bInIsSelected && (State == CurrentState));
+                State.GatherDebugData(InDebugger, bInIsSelected && (State == CurrentState));
 
                 InDebugger.PopIndent();
             }

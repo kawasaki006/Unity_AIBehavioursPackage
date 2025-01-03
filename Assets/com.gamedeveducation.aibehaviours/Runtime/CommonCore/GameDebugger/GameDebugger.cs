@@ -124,6 +124,15 @@ namespace CommonCore
             ++IndentLevel;
         }
 
+        // handles safety check for calling code (not handled in registersource)
+        public static void AddSource(IDebuggableObject InObject)
+        {
+            if (Instance == null)
+                return;
+
+            Instance.RegisterSource(InObject);
+        }
+
         public void RegisterSource(IDebuggableObject InObject)
         {
             if (Sources.Contains(InObject))
@@ -136,6 +145,15 @@ namespace CommonCore
                 CurrentSourceIndex = 0;
                 RefreshUI();
             }
+        }
+
+        // handles safety check for calling code (not handled in registersource)
+        public static void RemoveSource(IDebuggableObject InObject)
+        {
+            if (Instance == null)
+                return;
+
+            Instance.UnregisterSource(InObject);
         }
 
         public void UnregisterSource(IDebuggableObject InObject)

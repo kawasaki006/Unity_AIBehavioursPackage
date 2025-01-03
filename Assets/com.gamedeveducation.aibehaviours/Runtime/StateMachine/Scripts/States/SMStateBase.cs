@@ -26,7 +26,7 @@ namespace StateMachine
             DebugDisplayName = string.IsNullOrEmpty(InCustomName) ? GetType().Name : InCustomName;
         }
 
-        public void AddDefaultTransition(ISMState InFinishedState, ISMState InFailedState)
+        public void AddDefaultTransitions(ISMState InFinishedState, ISMState InFailedState)
         {
             bool bFinishedHandled = false;
             bool bFailedHandled = false;

@@ -19,7 +19,7 @@ namespace StateMachine
 
         ISMState AddTransition(ISMTransition InTransition, ISMState InNewState);
 
-        void AddDefaultTransition(ISMState InFinishedState, ISMState InFailedState);
+        void AddDefaultTransitions(ISMState InFinishedState, ISMState InFailedState);
 
         void EvaluateTransitions(Blackboard<FastName> InBlackboard, out ISMState OutNextState);
 
