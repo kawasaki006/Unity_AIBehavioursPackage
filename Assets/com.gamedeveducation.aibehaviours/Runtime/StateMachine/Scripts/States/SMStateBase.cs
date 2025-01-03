@@ -33,21 +33,25 @@ namespace StateMachine
 
             foreach (var Entry in Transitions)
             {
-                // todo
+                SMTransition_StateStatus StateTest = Entry.Transition as SMTransition_StateStatus;
+
+                // if it is a state status transition, check if it handles finished and failed
+                if (StateTest != null)
+                {
+                    bFinishedHandled |= StateTest.Handles(ESMStateStatus.Finished);
+                    bFailedHandled |= StateTest.Handles(ESMStateStatus.Failed);
+                }
 
                 // nothing to do if both are handled
                 if (bFinishedHandled && bFailedHandled)
                     return;
             }
 
-            if (bFinishedHandled)
-            {
-                // todo
-            }
-            if (bFailedHandled)
-            {
-                // todo
-            }
+            if (!bFinishedHandled)
+                AddTransition(new SMTransition_StateStatus(ESMStateStatus.Finished), InFinishedState);
+
+            if (!bFailedHandled)
+                AddTransition(new SMTransition_StateStatus(ESMStateStatus.Failed), InFailedState);
         }
 
         public ISMState AddTransition(ISMTransition InTransition, ISMState InNewState)
