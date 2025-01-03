@@ -45,7 +45,7 @@ namespace StateMachine
         public void Reset()
         {
             // properly exit current state if it's actively running
-            if ((CurrentState != null) && (CurrentState.GetStatus() == ESMStateStatus.Running))
+            if ((CurrentState != null) && (CurrentState.CurrentStatus == ESMStateStatus.Running))
                 CurrentState.OnExit(LinkedBlackboard);
 
             CurrentState = null;
@@ -75,7 +75,7 @@ namespace StateMachine
 
             // check transitions
             ISMState NextState = null;
-            CurrentState.EvaluateTransition(LinkedBlackboard, out NextState);
+            CurrentState.EvaluateTransitions(LinkedBlackboard, out NextState);
 
             // transition required?
             if (NextState != null)

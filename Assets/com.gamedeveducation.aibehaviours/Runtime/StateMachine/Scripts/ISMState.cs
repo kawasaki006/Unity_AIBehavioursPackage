@@ -15,13 +15,13 @@ namespace StateMachine
 
     public interface ISMState : IDebuggable
     {
-        ESMStateStatus GetStatus();
+        ESMStateStatus CurrentStatus { get; }
 
         ISMState AddTransition(ISMTransition InTransition, ISMState InNewState);
 
         void AddDefaultTransition(ISMState InFinishedState, ISMState InFailedState);
 
-        void EvaluateTransition(Blackboard<FastName> InBlackboard, out ISMState OutNextState);
+        void EvaluateTransitions(Blackboard<FastName> InBlackboard, out ISMState OutNextState);
 
         ESMStateStatus OnEnter(Blackboard<FastName> InBlackboard);
         ESMStateStatus OnTick(Blackboard<FastName> InBlackboard, float InDeltaTime);
