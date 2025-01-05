@@ -1,0 +1,17 @@
+{
+    "name": "HybridGOAP",
+    "rootNamespace": "HybridGOAP",
+    "references": [
+        "GUID:9240a55a31a208a4484d6530144948de",
+        "GUID:b4bf214d893968b4e81f698bf951a65c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
