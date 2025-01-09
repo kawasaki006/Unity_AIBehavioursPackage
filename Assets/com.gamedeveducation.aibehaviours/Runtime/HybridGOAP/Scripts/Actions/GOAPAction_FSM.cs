@@ -61,6 +61,10 @@ namespace HybridGOAP
 
         void InternalOnStateMachineCompleted_Finished()
         {
+            // reset FSM if finished
+            LinkedStateMachine.Reset();
+            OnStateMachineReset();
+
             OnStateMachineCompleted_Finished();
         }
 

@@ -5,9 +5,11 @@ using UnityEngine;
 
 namespace HybridGOAP
 {
-    public abstract class GOAPActionBase : IGOAPAction
+    public abstract class GOAPActionBase : MonoBehaviour, IGOAPAction
     {
         protected IGOAPBrain LinkedBrain;
+        protected INavigationInterface Navigation;
+
         protected Blackboard<FastName> LinkedBlackboard => LinkedBrain.CurrentBlackboard;
 
         protected System.Type[] SupportedGoalTypes = { };
@@ -19,6 +21,8 @@ namespace HybridGOAP
         public void BindToBrain(IGOAPBrain InBrain)
         {
             LinkedBrain = InBrain;
+            // find what every implements the navigation interface
+            Navigation = GetComponent<INavigationInterface>();
 
             PopulateSupportedGoalTypes();
             OnInitialize();
