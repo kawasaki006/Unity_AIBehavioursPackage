@@ -72,5 +72,24 @@ namespace HybridGOAPExample
             NavSystem.StopMovement();
             InCallbackFn(true);
         }
+
+        // hooked to awareness system event OnBestTargetChanged 
+        public void SetDetectedTarget(GameObject InTarget)
+        {
+            GameObject CurrentAwarenessTarget = null;
+            CurrentBlackboard.TryGet(CommonCore.Names.Awareness_BestTarget, out CurrentAwarenessTarget, null);
+
+            // if we're changing targets?
+            if ((CurrentAwarenessTarget != null) && (CurrentAwarenessTarget != InTarget))
+            {
+                GameObject CurrentTarget = null;
+                CurrentBlackboard.TryGet(CommonCore.Names.Target_GameObject, out CurrentTarget, null);
+
+                if (CurrentTarget == CurrentAwarenessTarget)
+                    CurrentBlackboard.Set(CommonCore.Names.Target_GameObject, (GameObject) null);
+            }
+
+            CurrentBlackboard.Set(CommonCore.Names.Awareness_BestTarget, InTarget);
+        }
     }
 }

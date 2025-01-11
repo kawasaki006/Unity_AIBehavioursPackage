@@ -10,13 +10,19 @@ namespace StateMachine
         INavigationInterface Navigation;
         float SearchRange;
         System.Func<Vector3> GetSearchLocationFn;
+        bool bContinuousMode;
+        float RecalcualteThresholdSq;
 
-        public SMState_CalculateMoveLocation(INavigationInterface InNavInterface, float InSearchRange, System.Func<Vector3> InGetSearchLocationFn, string InCustomName = null) :
+        Vector3 LastSearchLocation;
+
+        public SMState_CalculateMoveLocation(INavigationInterface InNavInterface, float InSearchRange, System.Func<Vector3> InGetSearchLocationFn, bool bInContinuousMode = false, float InRecalculateThreshold = 0.1f, string InCustomName = null) :
             base(InCustomName)
         {
             Navigation = InNavInterface;
             SearchRange = InSearchRange;
             GetSearchLocationFn = InGetSearchLocationFn;    
+            bContinuousMode = bInContinuousMode;
+            RecalcualteThresholdSq = InRecalculateThreshold * InRecalculateThreshold;
         }
 
         protected override ESMStateStatus OnEnterInternal(Blackboard<FastName> InBlackboard)
@@ -24,6 +30,9 @@ namespace StateMachine
             Vector3 MoveLocation = GetSearchLocationFn();
             if (MoveLocation == CommonCore.Constants.InvalidVector3Position)
                 return ESMStateStatus.Failed;
+
+            // update last search location with new move location
+            LastSearchLocation = MoveLocation;
 
             var Self = GetOwner(InBlackboard);
 
@@ -33,7 +42,8 @@ namespace StateMachine
             if (MoveLocation == CommonCore.Constants.InvalidVector3Position)
                 return ESMStateStatus.Failed;
 
-            return ESMStateStatus.Finished;
+            // if in continuous mode, continue running
+            return bContinuousMode ? ESMStateStatus.Running : ESMStateStatus.Finished;
 
         }
 
@@ -43,6 +53,31 @@ namespace StateMachine
 
         protected override ESMStateStatus OnTickInternal(Blackboard<FastName> InBlackboard, float InDeltaTime)
         {
+            // constantly finding new location if in continuous mode (reenter)
+            if (bContinuousMode)
+            {
+                Vector3 MoveLocation = GetSearchLocationFn();
+                if (MoveLocation == CommonCore.Constants.InvalidVector3Position)
+                    return ESMStateStatus.Failed;
+
+                // if moved far enough, recalculate
+                if ((MoveLocation - LastSearchLocation).sqrMagnitude >= RecalcualteThresholdSq)
+                {
+                    // update last search location with new move location
+                    LastSearchLocation = MoveLocation;
+
+                    var Self = GetOwner(InBlackboard);
+
+                    // find the nearest navigable point
+                    MoveLocation = Navigation.FindNearestNavigableLocation(Self, MoveLocation, SearchRange);
+                    InBlackboard.Set(CommonCore.Names.MoveToLocation, MoveLocation); // update blackboard regardless of succeeded or not
+                    if (MoveLocation == CommonCore.Constants.InvalidVector3Position)
+                        return ESMStateStatus.Failed;
+                }
+
+                return ESMStateStatus.Running;
+            }
+
             return CurrentStatus;
         }
     }

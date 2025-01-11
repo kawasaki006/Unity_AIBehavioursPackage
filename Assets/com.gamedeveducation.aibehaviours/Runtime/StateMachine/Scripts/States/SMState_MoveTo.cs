@@ -9,12 +9,17 @@ namespace StateMachine
     {
         INavigationInterface Navigation;
         float StoppingDistance;
+        bool bContinuousMode;
+        Vector3 LastDesination;
+        float RepathThresholdSq;
 
-        public SMState_MoveTo(INavigationInterface InNavigation, float InStoppingDistance, string InCustomName = null) :
+        public SMState_MoveTo(INavigationInterface InNavigation, float InStoppingDistance, bool bInContinuousMode = false, float InRepathThreshold = 0.1f, string InCustomName = null) :
             base(InCustomName)
         {
             Navigation = InNavigation;
             StoppingDistance = InStoppingDistance;
+            bContinuousMode = bInContinuousMode;
+            RepathThresholdSq = InRepathThreshold * InRepathThreshold;
         }
 
         protected override ESMStateStatus OnEnterInternal(Blackboard<FastName> InBlackboard)
@@ -27,6 +32,7 @@ namespace StateMachine
 
                 var Self = GetOwner(InBlackboard);
 
+                LastDesination = Destination; // update last destination
                 if (Navigation.SetMoveLocation(Self, Destination, StoppingDistance))
                     return ESMStateStatus.Running;
             }
@@ -45,6 +51,24 @@ namespace StateMachine
         protected override ESMStateStatus OnTickInternal(Blackboard<FastName> InBlackboard, float InDeltaTime)
         {
             var Self = GetOwner(InBlackboard);
+
+            if (bContinuousMode)
+            {
+                // look for changes to the destination
+                Vector3 CurrentDestination = CommonCore.Constants.InvalidVector3Position;
+                InBlackboard.TryGet(CommonCore.Names.MoveToLocation, out CurrentDestination, CommonCore.Constants.InvalidVector3Position);
+
+                if (CurrentDestination == CommonCore.Constants.InvalidVector3Position)
+                    return ESMStateStatus.Failed;
+
+                // have we moved more than the threshold?
+                if ((CurrentDestination - LastDesination).sqrMagnitude >= RepathThresholdSq)
+                {
+                    LastDesination = CurrentDestination;
+                    if (Navigation.SetMoveLocation(Self, CurrentDestination, StoppingDistance))
+                        return ESMStateStatus.Running;
+                }
+            }
 
             if (Navigation.IsPathfindingOrMoving(Self))
                 return ESMStateStatus.Running;
