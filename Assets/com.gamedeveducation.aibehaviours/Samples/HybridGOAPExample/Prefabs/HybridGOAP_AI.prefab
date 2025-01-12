@@ -1431,8 +1431,10 @@ GameObject:
   - component: {fileID: 8122448086403185990}
   - component: {fileID: 1906680907067568285}
   - component: {fileID: 6960864212688589447}
+  - component: {fileID: 4460129676675703416}
   - component: {fileID: 3632596050838094036}
   - component: {fileID: 697820519880642504}
+  - component: {fileID: 5468159479464927424}
   m_Layer: 0
   m_Name: HybridGOAP_AI
   m_TagString: Character
@@ -1721,7 +1723,19 @@ MonoBehaviour:
   AwarenessDecayRate: 0.1
   OnBestTargetChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 388402558418056648}
+        m_TargetAssemblyTypeName: HybridGOAPExample.GOAPBrainWrapper, HybridGOAPExample
+        m_MethodName: SetDetectedTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &370088701542553191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1884,6 +1898,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82e40e74ef4bf9b49ab97029f4766736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4460129676675703416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4242615088778704853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0269da903f86bb4b85418ea32bbd4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3632596050838094036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1916,6 +1942,48 @@ MonoBehaviour:
   MaxWaitTime: 8
   NavigationSearchRange: 5
   StoppingDistance: 0.1
+--- !u!114 &5468159479464927424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4242615088778704853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b460a01e616cad14a863f3c3b30e1b35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnPickPOIFn:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 388402558418056648}
+        m_TargetAssemblyTypeName: HybridGOAPExample.GOAPBrainWrapper, HybridGOAPExample
+        m_MethodName: PickSuitablePOI
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnSetPOIFn:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2372489948301707783}
+        m_TargetAssemblyTypeName: BaseAI, FrameworkEssentials
+        m_MethodName: SetLookTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4632431000794833810
 GameObject:
   m_ObjectHideFlags: 0
