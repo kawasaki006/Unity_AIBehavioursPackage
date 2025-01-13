@@ -18,6 +18,8 @@ namespace HybridGOAP
 
         public string DebugDisplayName {  get => GetType().Name; }
 
+        protected GameObject Self => LinkedBlackboard.GetGameObject(CommonCore.Names.Self);
+
         public void BindToBrain(IGOAPBrain InBrain)
         {
             LinkedBrain = InBrain;
