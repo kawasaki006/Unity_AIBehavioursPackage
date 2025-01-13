@@ -26,5 +26,9 @@ namespace CommonCore
 
         public static readonly FastName Interaction_SmartObject = new("Self.Interaction.SmartObject");
         public static readonly FastName Interaction_Type = new("Self.Interaction.Type");
+
+        public static readonly FastName Resource_FocusType = new("Self.Resources.Focus.Type");
+        public static readonly FastName Resource_FocusSource = new("Self.Resources.Focus.Source");
+        public static readonly FastName Resource_FocusStorage = new("Self.Resources.Focus.Storage");
     }
 }
