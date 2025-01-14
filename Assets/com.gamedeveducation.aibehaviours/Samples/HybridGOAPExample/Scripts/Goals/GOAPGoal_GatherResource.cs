@@ -13,7 +13,9 @@ namespace HybridGOAPExample
         public override void PrepareForPlanning()
         {
             float DesireToGather = float.MinValue;
-            OnGetGatherResourceDesire.Invoke(Self, (float InDesire) =>
+
+            // unwanted dependency, will be changed later
+            SimpleResourceWrangler.Instance.GetGatherResourceDesire(Self, (float InDesire) =>
             {
                 DesireToGather = InDesire;
             });

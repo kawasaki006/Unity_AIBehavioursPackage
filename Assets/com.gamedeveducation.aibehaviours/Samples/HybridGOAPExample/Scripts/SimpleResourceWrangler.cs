@@ -14,6 +14,7 @@ namespace HybridGOAPExample
         [SerializeField] float DesireToGatherPeaksAmount = 25f;
         [SerializeField] float GatherDesireWhenFull = 0.01f;
 
+        // desire for lowest resource 
         public void GetGatherResourceDesire(GameObject InQuerier, System.Action<float> InCallbackFn)
         {
             // tally how much we have stored
