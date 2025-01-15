@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace CommonCore
 {
-    public class GameDebugger : Singleton<GameDebugger>, IGameDebugger
+    public class GameDebugger : MonoBehaviourSingleton<GameDebugger>, IGameDebugger
     {
         [SerializeField] string IndentString = "  ";
         [SerializeField] UnityEvent<string> OnPopulateUI_SelectedObjectName = new();
